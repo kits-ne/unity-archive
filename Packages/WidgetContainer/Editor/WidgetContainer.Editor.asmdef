@@ -1,0 +1,16 @@
+{
+    "name": "WidgetContainer.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:30809536d3d642a196014792dd0e1119"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
