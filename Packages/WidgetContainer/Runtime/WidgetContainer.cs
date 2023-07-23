@@ -1,12 +1,59 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Runtime.Samples.WidgetContainer
 {
+    public interface IWidgetFactory
+    {
+        IWidget CreateWidget(string id);
+    }
+
+    public class TextLoggerFactory : IWidgetFactory
+    {
+        public IWidget CreateWidget(string id)
+        {
+            return new TextLogger()
+            {
+                Id = id
+            };
+        }
+    }
+
     public class WidgetContainer : MonoBehaviour
     {
         [SerializeField] private List<WidgetInfo> widgets = new List<WidgetInfo>();
+
+        private Dictionary<string, WidgetInfo> _widgetLookup;
+        private readonly Dictionary<string, IWidget> _nullableWidgets = new Dictionary<string, IWidget>();
+
+        private readonly Dictionary<Type, IWidgetFactory> _nullableWidgetTypes = new Dictionary<Type, IWidgetFactory>()
+        {
+            {typeof(IText), new TextLoggerFactory()}
+        };
+
+        public void Initialize()
+        {
+            _widgetLookup = widgets.ToDictionary(_ => _.id);
+        }
+
+        public T GetWidget<T>(string id) where T : class, IWidget
+        {
+            if (_widgetLookup.TryGetValue(id, out var value) && value.widget is T widget)
+            {
+                return widget;
+            }
+
+            if (!_nullableWidgets.TryGetValue(id, out var nullable)
+                && _nullableWidgetTypes.TryGetValue(typeof(T), out var factory))
+            {
+                nullable = factory.CreateWidget(id);
+                _nullableWidgets[id] = nullable;
+            }
+
+            return nullable as T;
+        }
 
         public void Collect()
         {
@@ -74,6 +121,28 @@ namespace Runtime.Samples.WidgetContainer
     public interface IText : IWidget
     {
         string Text { get; set; }
+    }
+
+    public class TextLogger : IText
+    {
+        public string Id { get; set; }
+        public bool IsActive { get; set; }
+
+        private string _text;
+
+        public string Text
+        {
+            get
+            {
+                Debug.Log($"text#{Id}: {_text}");
+                return _text;
+            }
+            set
+            {
+                _text = value;
+                Debug.Log($"text#{Id}: {_text}");
+            }
+        }
     }
 
     public interface ITextButton : IWidget, IText

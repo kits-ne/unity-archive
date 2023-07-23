@@ -1,0 +1,21 @@
+{
+    "name": "UniBloc.Editor.Tests",
+    "rootNamespace": "UniBloc.Editor.Tests",
+    "references": [
+        "GUID:0f311d0672ce4d72b94c5ee429b59ba1",
+        "GUID:6d1ce5d0572f4eb9a559e5c89a0ced68"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

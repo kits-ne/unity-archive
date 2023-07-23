@@ -1,0 +1,24 @@
+{
+    "name": "Samples.BLoC.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c7963a9ee2bd94802bdeec0cd9c37e70",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:5c01796d064528144a599661eaab93a6",
+        "GUID:c0dd0d10738d4ad4a9de57c559d0ca1b",
+        "GUID:0f311d0672ce4d72b94c5ee429b59ba1"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
