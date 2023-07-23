@@ -1,0 +1,16 @@
+{
+    "name": "UniBloc.Editor",
+    "rootNamespace": "UniBloc.Editor",
+    "references": [
+        "GUID:0f311d0672ce4d72b94c5ee429b59ba1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

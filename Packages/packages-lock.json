@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.aaron.unibloc": {
+      "version": "file:UniBloc",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.cysharp.unitask": "2.3.3"
+      }
+    },
     "com.aaron.widget-container": {
       "version": "file:WidgetContainer",
       "depth": 0,
@@ -7,6 +15,20 @@
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6"
       }
+    },
+    "com.cysharp.unitask": {
+      "version": "https://github.com/qkrsogusl3/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "d210e3d76adc0cce77f4ad2af1ade88dad6b1d5a"
+    },
+    "com.neuecc.unirx": {
+      "version": "https://github.com/qkrsogusl3/UniRx.git?path=Assets/Plugins/UniRx/Scripts",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "284d5c50d3f1ddd9fa7df3d382ea904732a9c2ff"
     },
     "com.unity.2d.animation": {
       "version": "9.0.3",
@@ -224,6 +246,16 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.test-framework.performance": {
+      "version": "3.0.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.31",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.textmeshpro": {
       "version": "3.0.6",
       "depth": 0,
@@ -263,6 +295,13 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
+    },
+    "jp.hadashikick.vyaml": {
+      "version": "https://github.com/hadashiA/VYaml.git?path=VYaml.Unity/Assets/VYaml#0.13.1",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "d84a8836f3f1f5d19e7951e4143502e42022c3d2"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

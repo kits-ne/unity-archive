@@ -1,0 +1,12 @@
+children:
+  - type: text
+    name: id-text
+    value: test-01 
+  - type: text
+    name: name-text
+    value: test-1
+  - type: text
+    value: test-2
+  - type: text
+    value: test-34
+  

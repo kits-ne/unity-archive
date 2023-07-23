@@ -7,6 +7,21 @@ namespace Runtime.Samples.WidgetContainer
     public class FeatureRenderer : MonoBehaviour
     {
         [SerializeField] private WidgetContainer container;
+        [SerializeField] private ScriptableFeature feature;
+
+        private void Awake()
+        {
+            container.Initialize();
+        }
+
+        private void OnEnable()
+        {
+            feature.Render(container);
+        }
+
+        private void OnDisable()
+        {
+        }
 
         private void Reset()
         {
