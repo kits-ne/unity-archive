@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using UnityEngine.Assertions;
 
 namespace UniBloc
 {
@@ -23,6 +25,7 @@ namespace UniBloc
 
         public bool Equals(Transition<TEvent, TState> other)
         {
+            Assert.IsNotNull(other);
             return CurrentState.Equals(other.CurrentState) &&
                    Event.Equals(other.Event) &&
                    NextState.Equals(other.NextState);
@@ -30,9 +33,11 @@ namespace UniBloc
 
         public override int GetHashCode()
         {
-            return CurrentState.GetHashCode() ^
-                   Event.GetHashCode() ^
-                   NextState.GetHashCode();
+            var stateComparer = EqualityComparer<TState>.Default;
+            var current = stateComparer.GetHashCode(CurrentState);
+            var evt = EqualityComparer<TEvent>.Default.GetHashCode(Event);
+            var next = stateComparer.GetHashCode(NextState);
+            return current ^ evt ^ next;
         }
 
         public override string ToString()

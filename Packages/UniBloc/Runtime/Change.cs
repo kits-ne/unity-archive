@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine.Assertions;
 
 namespace UniBloc
@@ -28,7 +29,10 @@ namespace UniBloc
 
         public override int GetHashCode()
         {
-            return CurrentState.GetHashCode() ^ NextState.GetHashCode();
+            var comparer = EqualityComparer<TState>.Default;
+            var current = comparer.GetHashCode(CurrentState);
+            var next = comparer.GetHashCode(NextState);
+            return current ^ next;
         }
 
         public override string ToString()
