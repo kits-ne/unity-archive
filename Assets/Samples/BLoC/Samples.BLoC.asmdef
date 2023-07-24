@@ -1,6 +1,6 @@
 {
     "name": "Samples.BLoC",
-    "rootNamespace": "",
+    "rootNamespace": "Samples.BLoC",
     "references": [
         "GUID:0f311d0672ce4d72b94c5ee429b59ba1",
         "GUID:f51ebe6a0ceec4240a699833d6309b23",
