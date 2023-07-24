@@ -1,0 +1,6 @@
+{
+    "name": "Samples.RigidBodyController",
+    "references": [
+        "Unity.Mathematics"
+    ]
+}
