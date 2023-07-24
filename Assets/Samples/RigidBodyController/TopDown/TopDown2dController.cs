@@ -2,41 +2,35 @@ using UnityEngine;
 
 namespace Samples.RigidBodyController
 {
-    public struct FrameInput
-    {
-        public Vector2 Move;
-        public bool DashDown;
-        public bool Attack;
-    }
-
     [RequireComponent(typeof(Rigidbody2D))]
     public class TopDown2dController : MonoBehaviour //, IOverlapSource2D
     {
         [SerializeField] private Rigidbody2D rb;
+
+        [field: SerializeField] public ScriptableControllerSettings Settings { get; private set; }
 
         public Vector2 Position => rb.position;
         public Vector2 Direction { get; private set; } = Vector2.right;
 
         private FrameInput _frameInput;
         private Vector2 _speed;
-
         public Vector2 Speed => _speed;
 
         private int _fixedFrame;
 
-        [SerializeField] private float maxSpeed = 10;
-        public float MaxSpeed => maxSpeed;
-        [SerializeField] private Vector2 acceleration = Vector2.one;
-        [SerializeField] private float deceleration = 1f;
+        private IControllerSettings _settings = DefaultControllerSettings.Instance;
+        public float MaxSpeed => _settings.MaxSpeed;
+        private Vector2 Acceleration => _settings.Acceleration;
+        private float Deceleration => _settings.Deceleration;
+        private float DashVelocity => _settings.DashVelocity;
+        private int DashFrames => _settings.DashFrames;
+        private float DashEndMultiplier => _settings.DashEndMultiplier;
 
-        [SerializeField] private float dashVelocity;
         private bool _dashToConsume;
         private Vector2 _dashVel;
         private bool _dashing = false;
         private bool _canDash = true;
         private int _dashStartedFrame;
-        [SerializeField] private int dashFrames = 10;
-        [SerializeField] private float dashEndMultiplier = 0.3f;
 
         // [SerializeField] private Animator animator;
         // private static readonly int MovingId = Animator.StringToHash("moving");
@@ -64,10 +58,12 @@ namespace Samples.RigidBodyController
         // [SerializeField] private OverlapCircle overlapAttack;
         // [SerializeField] private GameObject attackPrefab;
 
+
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
 
+            if (Settings != null) _settings = Settings;
             // var stateEvents = animator.GetBehaviours<StateEventBridge>();
             // stateEvents.First(_ => _.Key.Equals("attack")).OnStateExitEvent += OnOnStateExitEvent;
 
@@ -214,7 +210,7 @@ namespace Samples.RigidBodyController
                     return;
                 }
 
-                _dashVel = dir * dashVelocity;
+                _dashVel = dir * DashVelocity;
                 _dashing = true;
                 _canDash = false;
                 _dashStartedFrame = _fixedFrame;
@@ -223,10 +219,10 @@ namespace Samples.RigidBodyController
             if (_dashing)
             {
                 _speed = _dashVel;
-                if (_fixedFrame > _dashStartedFrame + dashFrames)
+                if (_fixedFrame > _dashStartedFrame + DashFrames)
                 {
                     _dashing = false;
-                    _speed *= dashEndMultiplier;
+                    _speed *= DashEndMultiplier;
                     _canDash = true;
                 }
 
@@ -236,13 +232,13 @@ namespace Samples.RigidBodyController
             // Horizontal
             if (_frameInput.Move.x == 0)
             {
-                _speed.x = Mathf.MoveTowards(_speed.x, 0, deceleration * Time.fixedDeltaTime);
+                _speed.x = Mathf.MoveTowards(_speed.x, 0, Deceleration * Time.fixedDeltaTime);
             }
 
             // Vertical
             if (_frameInput.Move.y == 0)
             {
-                _speed.y = Mathf.MoveTowards(_speed.y, 0, deceleration * Time.fixedDeltaTime);
+                _speed.y = Mathf.MoveTowards(_speed.y, 0, Deceleration * Time.fixedDeltaTime);
             }
 
 
@@ -251,8 +247,8 @@ namespace Samples.RigidBodyController
             // {
             var xInput = _frameInput.Move.x;
             var yInput = _frameInput.Move.y;
-            _speed.x = Mathf.MoveTowards(_speed.x, xInput * maxSpeed, acceleration.x * Time.fixedDeltaTime);
-            _speed.y = Mathf.MoveTowards(_speed.y, yInput * maxSpeed, acceleration.y * Time.fixedDeltaTime);
+            _speed.x = Mathf.MoveTowards(_speed.x, xInput * MaxSpeed, Acceleration.x * Time.fixedDeltaTime);
+            _speed.y = Mathf.MoveTowards(_speed.y, yInput * MaxSpeed, Acceleration.y * Time.fixedDeltaTime);
             // }
 
             if (_hasControl)
