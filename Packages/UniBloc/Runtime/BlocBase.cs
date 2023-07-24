@@ -67,7 +67,7 @@ namespace UniBloc
         public Stream<TState> Stream => new(_stateController.Source());
         public bool IsDisposed => _stateController.IsDisposed;
 
-        protected void Emit(TState state) => (this as IEmittable<TState>).Emit(state);
+        // protected void Emit(TState state) => (this as IEmittable<TState>).Emit(state);
 
         void IEmittable<TState>.Emit(TState state)
         {

@@ -12,6 +12,8 @@ namespace UniBloc
             protected Bloc<TEvent, TState> Bloc { get; set; }
             protected TEvent Event { get; set; }
 
+            private IEmittable<TState> Emittable => Bloc;
+
             public void OnEmit(TState state)
             {
                 if (Bloc.IsDisposed) return;
@@ -21,7 +23,7 @@ namespace UniBloc
                     Event,
                     state
                 ));
-                Bloc.Emit(state);
+                Emittable.Emit(state);
             }
 
             public void CompleteEvent(Emitter<TState> emitter)
