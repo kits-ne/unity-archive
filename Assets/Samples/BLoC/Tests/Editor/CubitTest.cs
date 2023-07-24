@@ -48,7 +48,7 @@ namespace Samples.BLoC.Tests.Editor
             Debug.Log(cubit.State);
             cubit.Increment();
             Debug.Log(cubit.State);
-            cubit.Dispose();
+            cubit.DisposeAsync();
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Samples.BLoC.Tests.Editor
             cubit.Increment();
             yield return null;
             subscription.Dispose();
-            cubit.Dispose();
+            cubit.DisposeAsync();
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace Samples.BLoC.Tests.Editor
             var subscription = cubit.Stream.Subscribe(_ => Debug.Log(_.ToString()));
             cubit.IncrementWithError();
             subscription.Dispose();
-            cubit.Dispose();
+            cubit.DisposeAsync();
         }
     }
 }

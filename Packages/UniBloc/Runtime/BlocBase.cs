@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 
 namespace UniBloc
 {
@@ -12,11 +13,11 @@ namespace UniBloc
         TState State { get; }
     }
 
-    public interface IStateStreamableSource<TState> : IStateStreamable<TState>, IDisposableWithFlag
+    public interface IStateStreamableSource<TState> : IStateStreamable<TState>, IAsyncDisposableWithFlag
     {
     }
 
-    public interface IDisposableWithFlag : IDisposable
+    public interface IAsyncDisposableWithFlag : IUniTaskAsyncDisposable
     {
         bool IsDisposed { get; }
     }
@@ -26,7 +27,7 @@ namespace UniBloc
         void Emit(TState state);
     }
 
-    public interface IErrorSink : IDisposableWithFlag
+    public interface IErrorSink : IAsyncDisposableWithFlag
     {
         void AddError(Exception error);
     }
@@ -117,10 +118,11 @@ namespace UniBloc
         {
         }
 
-        public void Dispose()
+        public virtual UniTask DisposeAsync()
         {
             Bloc.Observer.OnDispose(this);
             _stateController.Dispose();
+            return UniTask.CompletedTask;
         }
     }
 }

@@ -38,7 +38,7 @@ namespace UniBloc
         // };
     }
 
-    public abstract partial class Bloc<TEvent, TState> : BlocBase<TState>, IBlocEventSink<TEvent>, IAsyncDisposable
+    public abstract partial class Bloc<TEvent, TState> : BlocBase<TState>, IBlocEventSink<TEvent>
         where TState : IEquatable<TState>
         where TEvent : class, IEquatable<TEvent>
     {
@@ -222,7 +222,7 @@ namespace UniBloc
         {
         }
 
-        public async ValueTask DisposeAsync()
+        public override async UniTask DisposeAsync()
         {
             _eventController.Dispose();
 
@@ -241,7 +241,7 @@ namespace UniBloc
 
             _subscriptions.Clear();
 
-            Dispose();
+            await base.DisposeAsync();
         }
     }
 
