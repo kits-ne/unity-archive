@@ -48,16 +48,16 @@ namespace UniBloc
 
         public UniTask OnEach<T>(Stream<T> stream, Action<T> onData, Action<Exception> onError = null)
         {
-            var completer = new UniTaskCompletionSource();
-            IDisposable subscription = stream.Subscribe(
+            var eachCompleter = new UniTaskCompletionSource();
+            var subscription = stream.Subscribe(
                 onData,
-                onDone: () => completer.TrySetResult(),
-                onError: onError ?? (_ => completer.TrySetException(_)),
+                onDone: () => eachCompleter.TrySetResult(),
+                onError: onError ?? (error => eachCompleter.TrySetException(error)),
                 cancelOnError: onError == null
             );
 
             _disposables.Add(subscription);
-            return UniTask.WhenAny(completer.Task, completer.Task)
+            return UniTask.WhenAny(_completer.Task, eachCompleter.Task)
                 .ContinueWith(_ =>
                 {
                     subscription.Dispose();
@@ -69,7 +69,7 @@ namespace UniBloc
         {
             return OnEach(
                 stream,
-                onData: _ => Emit(onData(_)),
+                onData: data => Emit(onData(data)),
                 onError: onError != null
                     ? (error) => Emit(onError(error))
                     : null

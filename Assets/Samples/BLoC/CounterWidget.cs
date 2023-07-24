@@ -41,9 +41,18 @@ public class CounterWidget : MonoBehaviour
         _levelBloc.Stream.BindTo(levelText);
         levelAddButton.OnClickAsAsyncEnumerable()
             .Subscribe(_ => { _levelBloc.Add<LevelEvent.Add>(e => { e.Amount = Random.Range(1, 10); }); }, token);
+        
+    }
 
-        _levelBloc.AddTo(token);
-        _counterBloc.AddTo(token);
+    private void OnDestroy()
+    {
+        UniTask.WhenAll(
+            _levelBloc.DisposeAsync(),
+            _counterBloc.DisposeAsync()
+        ).ContinueWith(() =>
+        {
+            Debug.Log("disposed");
+        });
     }
 
     #region Counter
