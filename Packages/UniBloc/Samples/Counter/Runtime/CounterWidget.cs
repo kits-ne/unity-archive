@@ -1,4 +1,3 @@
-using System;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using TMPro;
@@ -7,38 +6,21 @@ using UnityEngine.UI;
 
 namespace UniBloc.Samples.Counter
 {
-    public class CounterWidget : MonoBehaviour
+    public class CounterWidget : PooledBlocWidget<CounterBloc, CounterEvent, int>
     {
         [SerializeField] private Button decrementButton;
         [SerializeField] private Button incrementButton;
         [SerializeField] private TextMeshProUGUI countLabel;
 
-        private CounterBloc _counter;
-
-        private void Awake()
+        protected override void OnCreated()
         {
-            _counter = new CounterBloc();
-
-            var token = this.GetCancellationTokenOnDestroy();
-            _counter.Stream.Subscribe(Render).AddTo(token);
-            decrementButton.OnClickAsAsyncEnumerable()
-                .Subscribe(_ => _counter.Add<CounterEvent.Decrement>())
-                .AddTo(token);
-            incrementButton.OnClickAsAsyncEnumerable()
-                .Subscribe(_ => _counter.Add<CounterEvent.Increment>())
-                .AddTo(token);
-
-            Render(_counter.State);
+            OnClick<CounterEvent.Decrement>(decrementButton);
+            OnClick<CounterEvent.Increment>(incrementButton);
         }
 
-        private void Render(int state)
+        protected override void Render(int state)
         {
             countLabel.text = state.ToString();
-        }
-
-        private void OnDestroy()
-        {
-            _counter?.DisposeAsync();
         }
     }
 }

@@ -218,6 +218,7 @@ MonoBehaviour:
   decrementButton: {fileID: 1528836669}
   incrementButton: {fileID: 1811315537}
   countLabel: {fileID: 609367991}
+  bloc: {fileID: 11400000, guid: e9b65b98e7c354643bbfacc4eab55025, type: 2}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
