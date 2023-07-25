@@ -32,7 +32,7 @@ namespace UniBloc.Samples.Counter
             _bloc.Stream.Subscribe(action).AddTo(_destroyToken);
         }
 
-        private void Add<T>(Action<T> modifier = null) where T : class, TEvent, new()
+        protected void Add<T>(Action<T> modifier = null) where T : class, TEvent, new()
         {
             _bloc.Add(modifier);
         }

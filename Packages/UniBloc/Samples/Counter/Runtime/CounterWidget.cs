@@ -1,5 +1,3 @@
-using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +14,19 @@ namespace UniBloc.Samples.Counter
         {
             OnClick<CounterEvent.Decrement>(decrementButton);
             OnClick<CounterEvent.Increment>(incrementButton);
+        }
+
+        private readonly float _duration = 1;
+        private float _timer = 0;
+
+        public void Update()
+        {
+            _timer += Time.deltaTime;
+            if (_timer >= _duration)
+            {
+                Add<CounterEvent.Decrement>();
+                _timer = 0;
+            }
         }
 
         protected override void Render(int state)
