@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UniBloc.Samples.Counter
+namespace UniBloc
 {
     public abstract class PooledBlocWidget<TBloc, TEvent, TState> : MonoBehaviour
         where TBloc : PooledBloc<TEvent, TState>, new()
@@ -13,11 +13,14 @@ namespace UniBloc.Samples.Counter
         where TState : IEquatable<TState>, new()
     {
         private TBloc _bloc;
-        private CancellationToken _destroyToken;
+        protected CancellationToken DestroyToken { get; private set; }
+
+        protected TState State => _bloc.State;
+        protected TBloc Bloc => _bloc;
 
         protected virtual void Awake()
         {
-            _destroyToken = this.GetCancellationTokenOnDestroy();
+            DestroyToken = this.GetCancellationTokenOnDestroy();
             _bloc = new TBloc();
             Subscribe(Render);
             OnCreated();
@@ -29,7 +32,7 @@ namespace UniBloc.Samples.Counter
 
         private void Subscribe(Action<TState> action)
         {
-            _bloc.Stream.Subscribe(action).AddTo(_destroyToken);
+            _bloc.Stream.Subscribe(action).AddTo(DestroyToken);
         }
 
         protected void Add<T>(Action<T> modifier = null) where T : class, TEvent, new()
@@ -46,7 +49,12 @@ namespace UniBloc.Samples.Counter
 
         protected void OnClick<T>(Button button) where T : class, TEvent, new()
         {
-            button.OnClickAsAsyncEnumerable().Subscribe(_ => Add<T>()).AddTo(_destroyToken);
+            button.OnClickAsAsyncEnumerable().Subscribe(_ => Add<T>()).AddTo(DestroyToken);
+        }
+
+        protected void OnClick(Button button, Action<AsyncUnit> action)
+        {
+            button.OnClickAsAsyncEnumerable().Subscribe(action).AddTo(DestroyToken);
         }
     }
 }

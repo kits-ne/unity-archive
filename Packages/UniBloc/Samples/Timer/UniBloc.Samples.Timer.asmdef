@@ -1,0 +1,19 @@
+{
+    "name": "UniBloc.Samples.Timer",
+    "rootNamespace": "UniBloc.Samples.Timer",
+    "references": [
+        "UniBloc",
+        "UniTask",
+        "UniTask.Linq",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

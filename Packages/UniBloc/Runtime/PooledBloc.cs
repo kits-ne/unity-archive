@@ -9,7 +9,7 @@ namespace UniBloc
         where TState : IEquatable<TState>, new()
     {
         private static readonly Dictionary<Type, Queue<TEvent>> EventPool = new();
-        private static Queue<TState> _statePool;
+        private static Dictionary<Type, Queue<TState>> _statePools;
 
         protected PooledBloc(TState initialState) : base(initialState)
         {
@@ -17,7 +17,7 @@ namespace UniBloc
 
         protected void UsingStatePool()
         {
-            _statePool = new();
+            _statePools = new();
         }
 
         public void Add<T>(Action<T> modifier = null) where T : class, TEvent, new()
@@ -41,15 +41,31 @@ namespace UniBloc
             }
         }
 
-        protected TState GetState()
+        protected TState GetState() => GetState<TState>();
+
+        private Queue<TState> GetStatePool(Type stateType)
         {
-            if (_statePool == null) throw new Exception("not using state pool");
-            return _statePool.Any() ? _statePool.Dequeue() : new();
+            if (_statePools == null) throw new Exception("not using state pool");
+
+            if (!_statePools.TryGetValue(stateType, out var pool))
+            {
+                pool = new Queue<TState>();
+                _statePools[stateType] = pool;
+            }
+
+            return pool;
+        }
+
+        protected T GetState<T>() where T :TState, new()
+        {
+            if (_statePools == null) throw new Exception("not using state pool");
+            var pool = GetStatePool(typeof(T));
+            return pool.Any() ? (T) pool.Dequeue() : new T();
         }
 
         protected sealed override void SetState(TState state)
         {
-            if (_statePool == null)
+            if (_statePools == null)
             {
                 base.SetState(state);
                 return;
@@ -57,7 +73,9 @@ namespace UniBloc
 
             var prevState = State;
             base.SetState(state);
-            _statePool.Enqueue(prevState);
+            
+            var pool = GetStatePool(prevState.GetType());
+            pool.Enqueue(prevState);
         }
     }
 }

@@ -27,12 +27,12 @@ namespace Samples.BLoC.Tests.Editor
 
         protected override void OnChange(Change<int> change)
         {
-            Debug.Log(change);
+            // Debug.Log(change);
         }
 
         protected override void OnError(Exception error)
         {
-            Debug.Log(error);
+            // Debug.Log(error);
         }
     }
 

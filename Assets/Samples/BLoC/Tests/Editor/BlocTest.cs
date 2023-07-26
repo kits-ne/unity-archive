@@ -42,22 +42,22 @@ namespace Samples.BLoC.Tests.Editor
 
         protected override void OnEvent(CounterEvent @event)
         {
-            Debug.Log(@event);
+            // Debug.Log(@event);
         }
 
         protected override void OnChange(Change<int> change)
         {
-            Debug.Log(change);
+            // Debug.Log(change);
         }
 
         protected override void OnTransition(Transition<CounterEvent, int> transition)
         {
-            Debug.Log(transition);
+            // Debug.Log(transition);
         }
 
         protected override void OnError(Exception error)
         {
-            Debug.Log(error);
+            // Debug.Log(error);
         }
     }
 
