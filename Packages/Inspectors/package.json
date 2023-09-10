@@ -1,0 +1,10 @@
+{
+    "name": "com.siren.inspectors",
+    "displayName": "Inspectors",
+    "version": "0.0.1",
+    "unity": "2021.2",
+    "description": "Inspector Extensions",
+    "keywords": [],
+    "license": "MIT",
+    "category": "Scripting"
+}
