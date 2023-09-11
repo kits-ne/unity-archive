@@ -13,6 +13,7 @@ namespace Samples.Inspectors
 
         [Find(".")] public SpriteRenderer selfSpriteRenderer;
         [Find] public BoxCollider selfBoxCollider;
+        [Find] public GameObject game;
 
         [Find("./")] public GameObject childA;
 

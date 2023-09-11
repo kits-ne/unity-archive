@@ -1,13 +1,5 @@
 {
   "dependencies": {
-    "com.aaron.unibloc": {
-      "version": "file:UniBloc",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.cysharp.unitask": "2.3.3"
-      }
-    },
     "com.aaron.widget-container": {
       "version": "file:WidgetContainer",
       "depth": 0,
@@ -32,6 +24,12 @@
     },
     "com.siren.inspectors": {
       "version": "file:Inspectors",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.siren.unibloc": {
+      "version": "file:UniBloc",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}

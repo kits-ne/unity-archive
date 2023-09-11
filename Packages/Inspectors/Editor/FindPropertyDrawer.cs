@@ -157,7 +157,9 @@ namespace Inspectors
 
             if (destGameObject == targetComponent.gameObject && fieldTypeIsGameObject)
             {
-                fieldInfo.SetValue(targetComponent, destGameObject);
+                // fieldInfo.SetValue(targetComponent, destGameObject);
+                property.objectReferenceValue = destGameObject;
+                property.serializedObject.ApplyModifiedProperties();
                 EditorGUIUtility.PingObject(destGameObject);
                 Debug.LogError($"use this.gameobject -> {destGameObject.name}.{property.name}");
                 return;
@@ -181,7 +183,9 @@ namespace Inspectors
 
             if (findObject != null)
             {
-                fieldInfo.SetValue(targetComponent, findObject);
+                // fieldInfo.SetValue(targetComponent, findObject);
+                property.objectReferenceValue = findObject;
+                property.serializedObject.ApplyModifiedProperties();
                 Debug.Log($"find target: {property.name}");
             }
             else
