@@ -127,7 +127,8 @@ namespace UniBloc
             await UniTask.WhenAll(Enumerable.Select(_emitters, _ => _.CompleteTask));
             foreach (var emitter in _emitters)
             {
-                emitter.Dispose();
+                if (emitter is IDisposable disposable)
+                    disposable.Dispose();
             }
 
             _emitters.Clear();

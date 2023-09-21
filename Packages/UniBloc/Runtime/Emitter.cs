@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 
 namespace UniBloc
 {
-    public interface IEmitter : IDisposable
+    public interface IEmitter
     {
         UniTask OnEach<T>(
             Stream<T> stream,
@@ -30,15 +30,41 @@ namespace UniBloc
     }
 
     // Completer -> TaskCompletionSource
-    public class Emitter<TState> : IEmitter<TState>
+    public class Emitter<TState> : IEmitter<TState>, IDisposable
     {
-        public Emitter(Action<TState> emit)
+        private static readonly Queue<Emitter<TState>> Pool = new(10);
+
+        public static Emitter<TState> Rent(Action<TState> emit)
+        {
+            Emitter<TState> emitter;
+            if (Pool.Any())
+            {
+                emitter = Pool.Dequeue();
+                emitter._emit = emit;
+            }
+            else
+            {
+                emitter = new Emitter<TState>(emit);
+            }
+
+            return emitter;
+        }
+
+        private static void Return(Emitter<TState> emitter)
+        {
+            emitter._completer = new();
+            emitter._isCanceled = false;
+            emitter._isCompleted = false;
+            Pool.Enqueue(emitter);
+        }
+
+        private Emitter(Action<TState> emit)
         {
             _emit = emit;
         }
 
-        private readonly Action<TState> _emit;
-        private readonly UniTaskCompletionSource _completer = new();
+        private Action<TState> _emit;
+        private UniTaskCompletionSource _completer = new();
         private readonly List<IDisposable> _disposables = new();
 
         private bool _isCanceled = false;
@@ -131,6 +157,8 @@ namespace UniBloc
 
             _disposables.Clear();
             _completer.TrySetResult();
+            _emit = null;
+            Return(this);
         }
     }
 }

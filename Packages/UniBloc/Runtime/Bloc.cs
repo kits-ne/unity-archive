@@ -225,10 +225,11 @@ namespace UniBloc
         {
             _eventController.Dispose();
 
-            await UniTask.WhenAll(_emitters.Select(_ => _.CompleteTask));
+            await UniTask.WhenAll(_emitters.Select(emitter => emitter.CompleteTask));
             foreach (var emitter in _emitters)
             {
-                emitter.Dispose();
+                if(emitter is IDisposable disposable)
+                    disposable.Dispose();
             }
 
             _emitters.Clear();

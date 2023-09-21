@@ -13,7 +13,7 @@ namespace UniBloc
             private EmitHandler(EmitController controller)
             {
                 _controller = controller;
-                _emitter = new Emitter<TState>(_controller.OnEmit);
+                _emitter = Emitter<TState>.Rent(_controller.OnEmit);
             }
 
             private void HandleEvent()
@@ -48,7 +48,7 @@ namespace UniBloc
             private EmitAsyncHandler(EmitAsyncController controller)
             {
                 _controller = controller;
-                _emitter = new Emitter<TState>(_controller.OnEmit);
+                _emitter = Emitter<TState>.Rent(_controller.OnEmit);
             }
 
             private async UniTaskVoid HandleEventAsync()
