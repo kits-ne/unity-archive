@@ -23,13 +23,13 @@ namespace UniBloc
 
         private readonly ChannelController<TEvent> _eventController = new();
         private readonly List<IDisposable> _subscriptions = new();
-        private readonly HashSet<TEvent> _handlers = new();
+        private readonly HashSet<TID> _handlers = new();
 
         private readonly HashSet<IEmitter> _emitters = new();
 
         public void Add(TEvent @event)
         {
-            ThrowIfNotExistsHandler(@event);
+            ThrowIfNotExistsHandler(@event.ID);
             try
             {
                 OnEventInternal(@event);
@@ -41,14 +41,13 @@ namespace UniBloc
                 throw;
             }
 
-            void ThrowIfNotExistsHandler(TEvent @event)
+            void ThrowIfNotExistsHandler(TID id)
             {
-                var exists = _handlers.Contains(@event);
+                var exists = _handlers.Contains(id);
                 if (!exists)
                 {
-                    var eventType = @event.GetType();
-                    var msg = $"add({eventType}) was called without a registered event handler.\n";
-                    msg += $"Make sure to register a handler via on<{eventType}>((event, emit) {{...}})";
+                    var msg = $"add({id.ToString()}) was called without a registered event handler.\n";
+                    msg += $"Make sure to register a handler via on<{id.ToString()}>((event, emit) {{...}})";
                     throw new StateException(msg);
                 }
             }
@@ -63,12 +62,12 @@ namespace UniBloc
         {
         }
 
-        protected void On(TEvent @event, Action<TEvent, IEmitter<TState>> handler)
+        protected void On(TID id, Action<TEvent, IEmitter<TState>> handler)
         {
-            ThrowIfExistsHandler(@event);
-            _handlers.Add(@event);
+            ThrowIfExistsHandler(id);
+            _handlers.Add(id);
 
-            var subscription = GetFilteredEventSource(@event)
+            var subscription = GetFilteredEventSource(id)
                 .Subscribe(e =>
                 {
                     var controller = EmitController.Get(this, e, handler);
@@ -77,12 +76,12 @@ namespace UniBloc
             _subscriptions.Add(subscription);
         }
 
-        protected void On(TEvent @event, EventHandler<TEvent, TState> handler)
+        protected void On(TID id, EventHandler<TEvent, TState> handler)
         {
-            ThrowIfExistsHandler(@event);
-            _handlers.Add(@event);
+            ThrowIfExistsHandler(id);
+            _handlers.Add(id);
 
-            var subscription = GetFilteredEventSource(@event)
+            var subscription = GetFilteredEventSource(id)
                 .Subscribe(e =>
                 {
                     var emitController = EmitAsyncController.Get(this, e, handler);
@@ -91,21 +90,21 @@ namespace UniBloc
             _subscriptions.Add(subscription);
         }
 
-        private IUniTaskAsyncEnumerable<TEvent> GetFilteredEventSource(TEvent @event) =>
+        private IUniTaskAsyncEnumerable<TEvent> GetFilteredEventSource(TID id) =>
             _eventController
                 .Source()
-                .Where(e => e.ID.Equals(@event.ID));
+                .Where(e => e.ID.Equals(id));
 
         protected virtual void OnDoneEvent(TEvent @event)
         {
         }
 
-        private void ThrowIfExistsHandler(TEvent @event)
+        private void ThrowIfExistsHandler(TID id)
         {
-            var exists = _handlers.Contains(@event);
+            var exists = _handlers.Contains(id);
             if (exists)
             {
-                var msg = $"on<{typeof(TEvent)}> was called multiple times. \n";
+                var msg = $"on<{id.ToString()}> was called multiple times. \n";
                 msg += "There should only be a single event handler per event type.";
                 throw new StateException(msg);
             }

@@ -47,8 +47,8 @@ namespace UniBloc.Samples.Counter
     {
         public CounterValueBloc() : base(0)
         {
-            On(new(CounterValueEvent.Decrement), (e, emitter) => { emitter.Emit(State - 1); });
-            On(new(CounterValueEvent.Increment), (e, emitter) =>
+            On(CounterValueEvent.Decrement, (e, emitter) => { emitter.Emit(State - 1); });
+            On(CounterValueEvent.Increment, (e, emitter) =>
             {
                 if (State >= 10)
                 {
@@ -58,7 +58,7 @@ namespace UniBloc.Samples.Counter
 
                 emitter.Emit(State + 1);
             });
-            On(new(CounterValueEvent.Reset), (e, emitter) => emitter.Emit(0));
+            On(CounterValueEvent.Reset, (e, emitter) => emitter.Emit(0));
         }
 
         protected override void OnError(Exception error)

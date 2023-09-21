@@ -6,5 +6,6 @@ namespace UniBloc.Widgets
         where TCubit : Cubit<TState>, new()
         where TState : IEquatable<TState>, new()
     {
+        protected TCubit Cubit => Bloc;
     }
 }

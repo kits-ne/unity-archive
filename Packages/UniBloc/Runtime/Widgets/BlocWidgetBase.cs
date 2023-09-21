@@ -11,7 +11,7 @@ namespace UniBloc.Widgets
     {
         private TBloc _bloc;
 
-        protected TState State => _bloc.State;
+        public TState State => _bloc.State;
         protected TBloc Bloc => _bloc;
         public Stream<TState> Stream => Bloc.Stream;
 
