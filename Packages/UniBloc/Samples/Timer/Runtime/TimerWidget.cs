@@ -2,7 +2,7 @@
 using System.Globalization;
 using Cysharp.Threading.Tasks;
 using TMPro;
-using UniBloc;
+using UniBloc.Widgets;
 using UnityEngine;
 using UnityEngine.UI;
 
