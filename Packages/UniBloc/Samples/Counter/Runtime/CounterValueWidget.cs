@@ -17,6 +17,8 @@ namespace UniBloc.Samples.Counter
         private readonly float _duration = 1;
         private float _timer = 0;
 
+        protected override CounterValueBloc CreateBloc() => new();
+
         protected override void OnCreated()
         {
             decrementButton.OnClickAsAsyncEnumerable()

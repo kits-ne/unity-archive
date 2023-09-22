@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 
@@ -16,25 +17,12 @@ namespace UniBloc
         void Add(TEvent @event);
     }
 
-    public delegate UniTask EventHandler<in TEvent, out TState>(TEvent @event, IEmitter<TState> emitter);
-
-    public delegate Stream<TEvent> EventMapper<TEvent>(TEvent @event);
-
-    public delegate Stream<TEvent> EventTransformer<TEvent>(Stream<TEvent> events, EventMapper<TEvent> mapper);
+    public delegate UniTask EventHandler<in TEvent, out TState>(TEvent @event, IEmitter<TState> emitter,
+        CancellationToken cancellationToken);
 
     public static class Bloc
     {
         public static BlocObserver Observer = DefaultBlocObserver.Instance;
-
-        // public static readonly EventTransformer<object> Transformer = (events, mapper) =>
-        // {
-        //     return new Stream<object>();
-        // };
-        // static EventTransformer<object> transformer = (events, mapper) {
-        //     return events
-        //         .map(mapper)
-        //         .transform<dynamic>(const _FlatMapStreamTransformer<dynamic>());
-        // };
     }
 
     public abstract partial class Bloc<TEvent, TState> : BlocBase<TState>, IBlocEventSink<TEvent>
@@ -50,10 +38,6 @@ namespace UniBloc
         private readonly List<Handler> _handlers = new();
 
         private readonly HashSet<IEmitter> _emitters = new();
-
-        // final _eventTransformer =
-        //     // ignore: deprecated_member_use_from_same_package
-        //     BlocOverrides.current?.eventTransformer ?? Bloc.transformer;
 
         public void Add(TEvent @event)
         {
@@ -92,109 +76,61 @@ namespace UniBloc
         {
         }
 
+        private IUniTaskAsyncEnumerable<TEvent> GetFilteredEventSource<T>() =>
+            _eventController
+                .Source()
+                .Where(e => e is T);
+
+
         protected void On<T>(Action<T, IEmitter<TState>> handler) where T : TEvent
         {
             ThrowIfExistsHandler<T>();
             _handlers.Add(new Handler(_ => _.GetType() == typeof(T), typeof(T)));
 
-            var subscription = _eventController.Source()
-                .Where(e => e is T)
+            var subscription = GetFilteredEventSource<T>()
                 .Subscribe(@event =>
                 {
                     var controller = EmitController<T>.Get(this, @event, handler);
                     EmitHandler<T>.HandleEvent(controller);
-
-                    // var emitter = new Emitter<TState>(OnEmit);
-                    // HandleEvent();
-                    // var controller = new ChannelController<T>(onDispose: emitter.Cancel);
-                    // void HandleEvent()
-                    // {
-                    //     try
-                    //     {
-                    //         _emitters.Add(emitter);
-                    //         handler((T) @event, emitter);
-                    //     }
-                    //     catch (Exception e)
-                    //     {
-                    //         OnErrorInternal(e);
-                    //         throw;
-                    //     }
-                    //     finally
-                    //     {
-                    //         // OnDone();
-                    //         emitter.Complete();
-                    //         _emitters.Remove(emitter);
-                    //         OnDoneEvent(@event);
-                    //     }
-                    // }
-                    //
-                    // void OnEmit(TState state)
-                    // {
-                    //     if (IsDisposed) return;
-                    //     if (State.Equals(state) && Emitted) return;
-                    //     OnTransitionInternal(new Transition<TEvent, TState>(
-                    //         State,
-                    //         @event,
-                    //         state
-                    //     ));
-                    //     Emit(state);
-                    // }
                 });
             _subscriptions.Add(subscription);
         }
 
-        // EventTransformer<T> transformer = null
-        protected void On<T>(EventHandler<T, TState> handler) where T : TEvent
+        protected void On<T>(
+            EventHandler<T, TState> handler,
+            ConcurrencyMode mode = ConcurrencyMode.Concurrent) where T : TEvent
         {
             ThrowIfExistsHandler<T>();
             _handlers.Add(new Handler(_ => _.GetType() == typeof(T), typeof(T)));
 
-            var subscription = _eventController.Source()
-                .Where(e => e is T)
-                .Subscribe(@event =>
+            var source = GetFilteredEventSource<T>();
+            var subscription = mode switch
+            {
+                ConcurrencyMode.Concurrent => source.Subscribe(e =>
                 {
-                    var emitController = EmitAsyncController<T>.Get(this, @event, handler);
-                    EmitAsyncHandler<T>.HandleEvent(emitController);
-
-                    // var emitter = new Emitter<TState>(OnEmit);
-                    // HandleEvent().Forget();
-                    // var controller = new ChannelController<T>(onDispose: emitter.Cancel);
-                    // async UniTaskVoid HandleEvent()
-                    // {
-                    //     try
-                    //     {
-                    //         _emitters.Add(emitter);
-                    //         await handler((T) @event, emitter);
-                    //     }
-                    //     catch (Exception e)
-                    //     {
-                    //         OnErrorInternal(e);
-                    //         throw;
-                    //     }
-                    //     finally
-                    //     {
-                    //         // OnDone
-                    //         emitter.Complete();
-                    //         _emitters.Remove(emitter);
-                    //         OnDoneEvent(@event);
-                    //     }
-                    // }
-                    //
-                    // void OnEmit(TState state)
-                    // {
-                    //     if (IsDisposed) return;
-                    //     if (State.Equals(state) && Emitted) return;
-                    //     OnTransitionInternal(new Transition<TEvent, TState>(
-                    //         State,
-                    //         @event,
-                    //         state
-                    //     ));
-                    //     Emit(state);
-                    // }
-                });
+                    var emitController = EmitAsyncController<T>.Get(this, e, handler);
+                    EmitAsyncHandler<T>.HandleEvent(emitController, DisposeToken);
+                }),
+                ConcurrencyMode.Sequential => source.Queue().SubscribeAwait(e =>
+                {
+                    var emitController = EmitAsyncController<T>.Get(this, e, handler);
+                    return EmitAsyncHandler<T>.HandleEvent(emitController, DisposeToken);
+                }),
+                // ConcurrencyMode.Restartable => source.Restart(DisposeToken).SubscribeAwait(tuple =>
+                // {
+                //     var (e, token) = tuple;
+                //     var emitController = EmitAsyncController<T>.Get(this, e, handler);
+                //     return EmitAsyncHandler<T>.HandleEvent(emitController, token);
+                // }),
+                ConcurrencyMode.Droppable => source.SubscribeAwait(e =>
+                {
+                    var emitController = EmitAsyncController<T>.Get(this, e, handler);
+                    return EmitAsyncHandler<T>.HandleEvent(emitController, DisposeToken);
+                }),
+                _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+            };
             _subscriptions.Add(subscription);
         }
-
 
         protected virtual void OnDoneEvent(TEvent @event)
         {
@@ -228,7 +164,7 @@ namespace UniBloc
             await UniTask.WhenAll(_emitters.Select(emitter => emitter.CompleteTask));
             foreach (var emitter in _emitters)
             {
-                if(emitter is IDisposable disposable)
+                if (emitter is IDisposable disposable)
                     disposable.Dispose();
             }
 

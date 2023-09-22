@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 
 namespace UniBloc
@@ -82,10 +83,10 @@ namespace UniBloc
         {
             public EventHandler<TEvent, TState> Handler { get; private set; }
 
-            public UniTask HandleEventAsync(Emitter<TState> emitter)
+            public UniTask HandleEventAsync(Emitter<TState> emitter, CancellationToken cancellationToken)
             {
                 Bloc._emitters.Add(emitter);
-                return Handler(Event, emitter);
+                return Handler(Event, emitter, cancellationToken);
             }
 
             public override void Dispose()

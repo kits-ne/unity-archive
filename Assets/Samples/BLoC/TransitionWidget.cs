@@ -1,11 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using UniBloc;
 using UniBloc.Widgets;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Random = UnityEngine.Random;
 
 namespace Samples.BLoC
 {
@@ -13,6 +15,12 @@ namespace Samples.BLoC
         IPointerDownHandler
     {
         [SerializeField] private CanvasGroup group;
+        [SerializeField] private ConcurrencyMode mode;
+
+        protected override TransitionBloc CreateBloc()
+        {
+            return new(mode);
+        }
 
         protected override void OnCreated()
         {
@@ -25,44 +33,66 @@ namespace Samples.BLoC
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            Add(new TransitionEvent(1));
+            Add(new TransitionEvent(2));
         }
     }
 
+
     public class TransitionBloc : ValueBloc<int, TransitionEvent, TransitionState>
     {
-        private readonly ChannelController<float> _progressChannel;
+        public TransitionBloc(ConcurrencyMode mode) : base(new(1))
+        {
+            On(1, async (e, emitter, token) =>
+            {
+                Debug.Log("in");
+                await emitter.ForEach(
+                    PlayProgressAsync(token).ToStream(),
+                    v => new(v));
+                Debug.Log("out");
+            }, mode);
+            On(2, async (e, emitter, token) =>
+            {
+                Debug.Log("in");
+                await emitter.ForEach(PlayProgress(token).ToStream(),
+                    v => new(v));
+                Debug.Log("out");
+            }, mode);
+        }
 
         public TransitionBloc() : base(new(1))
         {
-            _progressChannel = new();
-            On(1, (e, emitter) =>
-            {
-                if (State.Progress < 1) return UniTask.CompletedTask;
-
-                return emitter.ForEach(new Stream<float>(PlayProgress()), v => new(v));
-            });
         }
 
-        private IUniTaskAsyncEnumerable<float> PlayProgress()
+        private async IAsyncEnumerable<float> PlayProgressAsync(
+            [EnumeratorCancellation] CancellationToken token = default)
         {
-            return UniTaskAsyncEnumerable.Create<float>(async (writer, token) =>
+            await UniTask.Yield();
+            var t = 0f;
+            while (!token.IsCancellationRequested)
             {
+                t += Time.deltaTime;
+                Debug.Log(t);
+                yield return t;
                 await UniTask.Yield();
-                var t = 0f;
-                while (!token.IsCancellationRequested && !(t > 1))
-                {
-                    t += Time.deltaTime;
-                    await writer.YieldAsync(t);
-                    await UniTask.Yield();
-                }
-            });
+            }
+
+            Debug.Log("end");
         }
 
-        public override UniTask DisposeAsync()
+        private async IAsyncEnumerable<float> PlayProgress(
+            [EnumeratorCancellation] CancellationToken token = default)
         {
-            _progressChannel.Dispose();
-            return base.DisposeAsync();
+            await UniTask.Yield();
+            var t = 0f;
+            while (!token.IsCancellationRequested && t < 1)
+            {
+                t += Time.deltaTime;
+                // Debug.Log(t);
+                yield return t;
+                await UniTask.Yield();
+            }
+
+            Debug.Log("end");
         }
     }
 

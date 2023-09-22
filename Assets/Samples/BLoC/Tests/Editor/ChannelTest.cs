@@ -27,7 +27,7 @@ namespace Samples.BLoC.Tests.Editor
             var events = new List<(ChannelEvent e, object data)>();
 
             var controller = new ChannelController<int>();
-            controller.Done.ContinueWith(() => { events.Add((ChannelEvent.Done, null)); });
+            controller.Done.ContinueWith(() => { events.Add((ChannelEvent.Done, null)); }).Forget();
             var subscription = controller.Source().Subscribe(_ => { events.Add((ChannelEvent.OnData, _)); });
             controller.Publish(10);
             await UniTask.DelayFrame(1);

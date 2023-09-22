@@ -1,12 +1,17 @@
 using System;
+using Cysharp.Threading.Tasks;
 
 namespace UniBloc.Samples.Counter
 {
     public class CounterBloc : PooledBloc<CounterEvent, int>
     {
-        public CounterBloc() : base(0)
+        public CounterBloc(ConcurrencyMode mode) : base(0)
         {
-            On<CounterEvent.Decrement>((e, emitter) => { emitter.Emit(State - 1); });
+            On<CounterEvent.Decrement>(async (e, emitter, token) =>
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
+                emitter.Emit(State - 1);
+            }, mode);
             On<CounterEvent.Increment>((e, emitter) =>
             {
                 if (State >= 10)

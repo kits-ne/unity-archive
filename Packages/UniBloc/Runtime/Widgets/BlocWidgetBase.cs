@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UniBloc.Widgets
 {
     public abstract class BlocWidgetBase<TBloc, TState> : MonoBehaviour
-        where TBloc : BlocBase<TState>, new()
+        where TBloc : BlocBase<TState>
         where TState : IEquatable<TState>
 
     {
@@ -22,7 +22,7 @@ namespace UniBloc.Widgets
             OnCreated();
         }
 
-        protected virtual TBloc CreateBloc() => new();
+        protected abstract TBloc CreateBloc();
 
         protected abstract void OnCreated();
 

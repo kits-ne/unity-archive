@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UniBloc.Widgets;
@@ -14,6 +13,8 @@ namespace Samples.Timer.Runtime
         [SerializeField] private Button playButton;
         [SerializeField] private Button pauseButton;
         [SerializeField] private Button replayButton;
+
+        protected override TimerBloc CreateBloc() => new();
 
         protected override void OnCreated()
         {

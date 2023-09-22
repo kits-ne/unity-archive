@@ -52,7 +52,7 @@ namespace UniBloc
 
         private static void Return(Emitter<TState> emitter)
         {
-            emitter._completer = new();
+            emitter._completer = null;
             emitter._isCanceled = false;
             emitter._isCompleted = false;
             Pool.Enqueue(emitter);
@@ -64,13 +64,13 @@ namespace UniBloc
         }
 
         private Action<TState> _emit;
-        private UniTaskCompletionSource _completer = new();
+        private UniTaskCompletionSource _completer;
         private readonly List<IDisposable> _disposables = new();
 
         private bool _isCanceled = false;
         private bool _isCompleted = false;
 
-        public UniTask CompleteTask => _completer.Task;
+        public UniTask CompleteTask => _completer?.Task ?? UniTask.CompletedTask;
 
         public UniTask OnEach<T>(Stream<T> stream, Action<T> onData, Action<Exception> onError = null)
         {
@@ -83,6 +83,7 @@ namespace UniBloc
             );
 
             _disposables.Add(subscription);
+            _completer = new UniTaskCompletionSource();
             return UniTask.WhenAny(_completer.Task, eachCompleter.Task)
                 .ContinueWith(_ =>
                 {
@@ -156,7 +157,7 @@ namespace UniBloc
             }
 
             _disposables.Clear();
-            _completer.TrySetResult();
+            _completer?.TrySetResult();
             _emit = null;
             Return(this);
         }

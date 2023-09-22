@@ -76,17 +76,39 @@ namespace UniBloc
             _subscriptions.Add(subscription);
         }
 
-        protected void On(TID id, EventHandler<TEvent, TState> handler)
+
+        protected void On(TID id, EventHandler<TEvent, TState> handler,
+            ConcurrencyMode mode = ConcurrencyMode.Concurrent)
         {
             ThrowIfExistsHandler(id);
             _handlers.Add(id);
 
-            var subscription = GetFilteredEventSource(id)
-                .Subscribe(e =>
+            var source = GetFilteredEventSource(id);
+            var subscription = mode switch
+            {
+                ConcurrencyMode.Concurrent => source.Subscribe(e =>
                 {
                     var emitController = EmitAsyncController.Get(this, e, handler);
-                    EmitAsyncHandler.HandleEvent(emitController);
-                });
+                    EmitAsyncHandler.HandleEvent(emitController, DisposeToken);
+                }),
+                ConcurrencyMode.Sequential => source.Queue().SubscribeAwait(e =>
+                {
+                    var emitController = EmitAsyncController.Get(this, e, handler);
+                    return EmitAsyncHandler.HandleEvent(emitController, DisposeToken);
+                }),
+                // ConcurrencyMode.Restartable => source.Restart(DisposeToken).SubscribeAwait(tuple =>
+                // {
+                //     var (e, token) = tuple;
+                //     var emitController = EmitAsyncController.Get(this, e, handler);
+                //     return EmitAsyncHandler.HandleEvent(emitController, token);
+                // }),
+                ConcurrencyMode.Droppable => source.SubscribeAwait(e =>
+                {
+                    var emitController = EmitAsyncController.Get(this, e, handler);
+                    return EmitAsyncHandler.HandleEvent(emitController, DisposeToken);
+                }),
+                _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+            };
             _subscriptions.Add(subscription);
         }
 
@@ -122,6 +144,8 @@ namespace UniBloc
 
         public override async UniTask DisposeAsync()
         {
+            await base.DisposeAsync();
+
             _eventController.Dispose();
 
             await UniTask.WhenAll(Enumerable.Select(_emitters, _ => _.CompleteTask));
@@ -139,8 +163,6 @@ namespace UniBloc
             }
 
             _subscriptions.Clear();
-
-            await base.DisposeAsync();
         }
     }
 }

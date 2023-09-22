@@ -10,6 +10,9 @@ namespace UniBloc.Samples.Counter
         [SerializeField] private Button decrementButton;
         [SerializeField] private Button incrementButton;
         [SerializeField] private TextMeshProUGUI countLabel;
+        [SerializeField] private ConcurrencyMode mode;
+
+        protected override CounterBloc CreateBloc() => new(mode);
 
         protected override void OnCreated()
         {
@@ -17,18 +20,18 @@ namespace UniBloc.Samples.Counter
             OnClick<CounterEvent.Increment>(incrementButton);
         }
 
-        private readonly float _duration = 1;
-        private float _timer = 0;
-
-        public void Update()
-        {
-            _timer += Time.deltaTime;
-            if (_timer >= _duration)
-            {
-                Add<CounterEvent.Decrement>();
-                _timer = 0;
-            }
-        }
+        // private readonly float _duration = 1;
+        // private float _timer = 0;
+        //
+        // public void Update()
+        // {
+        //     _timer += Time.deltaTime;
+        //     if (_timer >= _duration)
+        //     {
+        //         Add<CounterEvent.Decrement>();
+        //         _timer = 0;
+        //     }
+        // }
 
         protected override void Render(int state)
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using NUnit.Framework;
@@ -19,7 +20,8 @@ namespace Samples.BLoC.Tests.Editor
         public IEnumerator RepoForEachAsyncPasses() => UniTask.ToCoroutine(async () =>
         {
             var repo = new TodoRepo();
-            await repo.ProductIdeas().ForEachAsync(Debug.Log);
+            var cts = new CancellationTokenSource();
+            await repo.ProductIdeas(cts.Token).ForEachAsync(Debug.Log, cancellationToken: cts.Token);
         });
 
         [UnityTest]
@@ -48,9 +50,9 @@ namespace Samples.BLoC.Tests.Editor
         public TodoAppBloc(TodoRepo repo) : base(new TodoState())
         {
             _repo = repo;
-            On<TodoReadEvent>((e, emitter) =>
+            On<TodoReadEvent>((e, emitter, token) =>
             {
-                return emitter.ForEach(new Stream<string>(_repo.ProductIdeas()), onData: (data) => new TodoState()
+                return emitter.ForEach(_repo.ProductIdeas(token).ToStream(), onData: (data) => new TodoState()
                 {
                     Todo = data
                 });
@@ -76,8 +78,6 @@ namespace Samples.BLoC.Tests.Editor
 
     public class TodoRepo
     {
-        int _currentAppIdea = 0;
-
         private readonly string[] _ideas =
         {
             "Future prediction app that rewards you if you predict the next day's news",
@@ -87,11 +87,11 @@ namespace Samples.BLoC.Tests.Editor
             "Solitaire app that freezes before you can win",
         };
 
-        public IUniTaskAsyncEnumerable<string> ProductIdeas()
+        public IUniTaskAsyncEnumerable<string> ProductIdeas(CancellationToken cancellationToken)
         {
             return _ideas.ToUniTaskAsyncEnumerable().SelectAwait(async (str) =>
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(1));
+                await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: cancellationToken);
                 return str;
             });
         }

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace UniBloc.Widgets
 {
     public abstract class PooledBlocWidget<TBloc, TEvent, TState> : BlocWidgetBase<TBloc, TState>
-        where TBloc : PooledBloc<TEvent, TState>, new()
+        where TBloc : PooledBloc<TEvent, TState>
         where TEvent : class, IEquatable<TEvent>, new()
         where TState : IEquatable<TState>, new()
     {

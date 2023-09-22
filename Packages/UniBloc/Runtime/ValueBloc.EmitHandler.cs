@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 
 namespace UniBloc
@@ -51,11 +52,11 @@ namespace UniBloc
                 _emitter = Emitter<TState>.Rent(_controller.OnEmit);
             }
 
-            private async UniTaskVoid HandleEventAsync()
+            private async UniTask HandleEventAsync(CancellationToken cancellationToken)
             {
                 try
                 {
-                    await _controller.HandleEventAsync(_emitter);
+                    await _controller.HandleEventAsync(_emitter, cancellationToken);
                 }
                 catch (Exception e)
                 {
@@ -69,9 +70,9 @@ namespace UniBloc
                 }
             }
 
-            public static void HandleEvent(EmitAsyncController controller)
+            public static UniTask HandleEvent(EmitAsyncController controller, CancellationToken cancellationToken)
             {
-                new EmitAsyncHandler(controller).HandleEventAsync().Forget();
+                return new EmitAsyncHandler(controller).HandleEventAsync(cancellationToken);
             }
         }
     }

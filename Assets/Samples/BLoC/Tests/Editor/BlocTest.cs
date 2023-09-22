@@ -107,12 +107,16 @@ namespace Samples.BLoC.Tests.Editor
             {
                 1, 2, 3, 4, 5
             };
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
             var msg = "test";
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
 
             Func<int, bool> predicate = (val) => val == 5;
             Assert.That(() =>
             {
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
                 int a = 0;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
                 a = 1;
                 bool isAny = list.AnyNonAlloc(predicate);
                 var b = new Vector3()
@@ -163,7 +167,7 @@ namespace Samples.BLoC.Tests.Editor
         public SimpleBloc(SimpleState initialState) : base(initialState)
         {
             UsingStatePool();
-            On<SimpleEvent.Foo>(async (e, emitter) =>
+            On<SimpleEvent.Foo>((e, emitter) =>
             {
                 var state = GetState();
                 state.Level = State.Level + 1;
