@@ -51,7 +51,7 @@ namespace UniBloc
                 _emitter = Emitter<TState>.Rent(_controller.OnEmit);
             }
 
-            private async UniTaskVoid HandleEventAsync()
+            private async UniTask HandleEventAsync()
             {
                 try
                 {
@@ -69,9 +69,9 @@ namespace UniBloc
                 }
             }
 
-            public static void HandleEvent(EmitAsyncController controller)
+            public static UniTask HandleEvent(EmitAsyncController controller)
             {
-                new EmitAsyncHandler(controller).HandleEventAsync().Forget();
+                return new EmitAsyncHandler(controller).HandleEventAsync();
             }
         }
     }

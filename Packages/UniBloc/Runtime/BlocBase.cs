@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 
 namespace UniBloc
@@ -40,6 +41,8 @@ namespace UniBloc
         : IBloc, IStateStreamableSource<TState>, IEmittable<TState>, IErrorSink
         where TState : IEquatable<TState>
     {
+        private readonly CancellationTokenSource _cancellationTokenSource = new();
+        protected CancellationToken DisposeToken => _cancellationTokenSource.Token;
         protected BlocBase(TState state = default)
         {
             _state = state;
@@ -122,6 +125,7 @@ namespace UniBloc
         {
             Bloc.Observer.OnDispose(this);
             _stateController.Dispose();
+            _cancellationTokenSource.Cancel();
             return UniTask.CompletedTask;
         }
     }

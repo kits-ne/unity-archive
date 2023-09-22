@@ -1,11 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using UniBloc;
 using UniBloc.Widgets;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Random = UnityEngine.Random;
 
 namespace Samples.BLoC
 {
@@ -13,6 +15,12 @@ namespace Samples.BLoC
         IPointerDownHandler
     {
         [SerializeField] private CanvasGroup group;
+        [SerializeField] private ConcurrencyMode mode;
+
+        protected override TransitionBloc CreateBloc()
+        {
+            return new(mode);
+        }
 
         protected override void OnCreated()
         {
@@ -33,30 +41,38 @@ namespace Samples.BLoC
     {
         private readonly ChannelController<float> _progressChannel;
 
-        public TransitionBloc() : base(new(1))
+        public TransitionBloc(ConcurrencyMode mode) : base(new(1))
         {
             _progressChannel = new();
-            On(1, (e, emitter) =>
+            On(1, async (e, emitter) =>
             {
-                if (State.Progress < 1) return UniTask.CompletedTask;
-
-                return emitter.ForEach(new Stream<float>(PlayProgress()), v => new(v));
-            });
+                Debug.Log("in");
+                await emitter.ForEach(
+                    new Stream<float>(PlayProgressAsync(DisposeToken).ToUniTaskAsyncEnumerable()),
+                    v => new(v));
+                Debug.Log("out");
+            }, mode);
         }
 
-        private IUniTaskAsyncEnumerable<float> PlayProgress()
+        public TransitionBloc() : base(new(1))
         {
-            return UniTaskAsyncEnumerable.Create<float>(async (writer, token) =>
+        }
+
+
+        private async IAsyncEnumerable<float> PlayProgressAsync(
+            [EnumeratorCancellation] CancellationToken token = default)
+        {
+            await UniTask.Yield();
+            var t = 0f;
+            while (!token.IsCancellationRequested)
             {
+                t += Time.deltaTime;
+                Debug.Log(t);
+                yield return t;
                 await UniTask.Yield();
-                var t = 0f;
-                while (!token.IsCancellationRequested && !(t > 1))
-                {
-                    t += Time.deltaTime;
-                    await writer.YieldAsync(t);
-                    await UniTask.Yield();
-                }
-            });
+            }
+
+            Debug.Log("end");
         }
 
         public override UniTask DisposeAsync()
