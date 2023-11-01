@@ -753,6 +753,8 @@ MonoBehaviour:
   childA1BoxCollider: {fileID: 1861211770}
   childC1: {fileID: 149819707}
   childC1SpriteRenderer: {fileID: 149819709}
+  data: {fileID: 11400000, guid: d2a92c2a455e1904885a2cf272970521, type: 2}
+  data2: {fileID: 11400000, guid: d2a92c2a455e1904885a2cf272970521, type: 2}
   references:
     version: 2
     RefIds:

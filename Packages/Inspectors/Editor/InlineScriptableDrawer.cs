@@ -15,15 +15,15 @@ namespace Inspectors
                 return new PropertyField(property);
             }
 
-            var (foldout, foldoutInput) = CreateFoldout();
+            var (foldout, foldoutInput) = CreateFoldout(property);
             var propertyField = CreatePropertyField(property);
             foldoutInput.Add(propertyField);
 
             propertyField.RegisterValueChangeCallback(e =>
             {
+                foldout.Clear();
                 if (e.changedProperty.objectReferenceValue is not ScriptableObject scriptableObject)
                 {
-                    foldout.Clear();
                     foldout.value = false;
                 }
                 else
@@ -53,14 +53,15 @@ namespace Inspectors
             return field;
         }
 
-        private (Foldout foldout, VisualElement foldoutInput) CreateFoldout()
+        private (Foldout foldout, VisualElement foldoutInput) CreateFoldout(SerializedProperty property)
         {
             var foldout = new Foldout
             {
                 value = false,
-                viewDataKey = "inline-scriptable-foldout"
+                viewDataKey = property.displayName
             };
             var foldoutInput = foldout.Q(className: "unity-foldout__input");
+            foldoutInput.style.flexShrink = 1;
             return (foldout, foldoutInput);
         }
 

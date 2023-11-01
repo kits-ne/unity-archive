@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Inspectors;
 using Inspectors.DataBinding;
 using UnityEngine;
@@ -24,6 +22,9 @@ namespace Samples.Inspectors
 
         [Find("./child-c")] public GameObject childC1;
         [Find("./child-c", nameof(childC1))] public SpriteRenderer childC1SpriteRenderer;
+
+        [InlineScriptable] public SampleData data;
+        [InlineScriptable] public SampleData data2;
     }
 
 
