@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.brunomikoski.scriptableobjectcollection": "https://github.com/brunomikoski/ScriptableObjectCollection.git",
     "com.cysharp.unitask": "https://github.com/qkrsogusl3/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.neuecc.unirx": "https://github.com/qkrsogusl3/UniRx.git?path=Assets/Plugins/UniRx/Scripts",
     "com.unity.collab-proxy": "2.0.5",

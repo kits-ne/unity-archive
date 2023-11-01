@@ -9,8 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38ec0b2fe1cb44f1ac27b6b2e569b06e, type: 3}
-  m_Name: SampleData-b
+  m_Script: {fileID: 11500000, guid: 132f99a784a788545b1f334714f3523c, type: 3}
+  m_Name: Item0
   m_EditorClassIdentifier: 
-  level: 58
-  exp: 2.95
+  guid:
+    value1: 4975758575533691975
+    value2: 8573315680354427041
+  collectionGUID:
+    value1: 5512404033760825611
+    value2: 1470060596258753692

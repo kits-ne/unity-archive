@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a49e4400d1f9c24ebb544b9e219306f, type: 3}
+  m_Name: ItemCollection
+  m_EditorClassIdentifier: 
+  guid:
+    value1: 5512404033760825611
+    value2: 1470060596258753692
+  items:
+  - {fileID: 11400000, guid: 7549d88e833b24746b18b9940ea1bf9a, type: 2}
+  automaticallyLoaded: 1
+  generateAsPartialClass: 0
+  generateAsBaseClass: 0
+  generatedFileLocationPath: Assets/Generated/Scripts
+  generatedStaticClassFileName: ItemCollectionStatic
+  generateStaticFileNamespace: DefaultCompany.Samples.Collections

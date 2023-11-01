@@ -16,26 +16,21 @@ namespace Inspectors.DataBinding.Editor
             var root = new VisualElement();
             InspectorElement.FillDefaultInspector(root, serializedObject, this);
 
-            if (target is not ItemView itemView) return root;
-
-            var targetType = target.GetType();
-            var visualsFieldInfo = targetType.BaseType?.GetField("visuals",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            if (visualsFieldInfo == null)
+            if (target is not ItemView itemView)
             {
-                Debug.LogWarning("not found visuals field");
                 return root;
             }
 
-            var attr = targetType.GetCustomAttribute<ItemVisualsAttribute>();
+            var attr = target.GetType().GetCustomAttribute<ItemVisualsAttribute>();
             if (attr == null) return root;
 
+            var property = serializedObject.FindProperty("visuals");
             var visualsTypes = attr.Types;
 
             var defaultIndex = 0;
             if (!itemView.HasVisuals)
             {
-                InstantiateVisuals(visualsFieldInfo, visualsTypes.First());
+                InstantiateVisuals(property, visualsTypes.First());
             }
             else
             {
@@ -46,15 +41,16 @@ namespace Inspectors.DataBinding.Editor
             var popupField = new PopupField<Type>(visualsTypes, defaultIndex,
                 t => $"{t.Name} ({t.Namespace})");
 
-            popupField.RegisterValueChangedCallback(e => { InstantiateVisuals(visualsFieldInfo, e.newValue); });
+            popupField.RegisterValueChangedCallback(e => { InstantiateVisuals(property, e.newValue); });
             root.Insert(1, popupField);
             return root;
         }
 
-        private void InstantiateVisuals(FieldInfo visualsFieldInfo, Type visualsType)
+        private void InstantiateVisuals(SerializedProperty property, Type visualsType)
         {
             var itemVisuals = Activator.CreateInstance(visualsType) as ItemVisuals;
-            visualsFieldInfo.SetValue(target, itemVisuals);
+            property.boxedValue = itemVisuals;
+            property.serializedObject.ApplyModifiedProperties();
         }
     }
 }

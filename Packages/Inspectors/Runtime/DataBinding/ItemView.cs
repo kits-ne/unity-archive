@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Inspectors.DataBinding
@@ -18,7 +19,14 @@ namespace Inspectors.DataBinding
                 return visuals;
             }
         }
+        public Type TypeOfVisuals => HasVisuals ? Visuals.GetType() : null;
 
         [SerializeReference, SerializeField] private ItemVisuals visuals = default;
+
+        [ContextMenu(nameof(ClearVisuals))]
+        private void ClearVisuals()
+        {
+            visuals = null;
+        }
     }
 }

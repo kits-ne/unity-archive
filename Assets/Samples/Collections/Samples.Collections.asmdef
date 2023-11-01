@@ -1,0 +1,16 @@
+{
+    "name": "Samples.Collections",
+    "rootNamespace": "",
+    "references": [
+        "GUID:435719c11c6f941d98c6110929b03789"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
