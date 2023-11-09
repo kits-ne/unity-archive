@@ -1,12 +1,10 @@
 {
-    "name": "WidgetContainer.Editor",
+    "name": "Samples.AndroidImmediateKit",
     "rootNamespace": "",
     "references": [
-        "GUID:30809536d3d642a196014792dd0e1119"
+        "GUID:5854ec06ce5289e44923d6a98cf9752e"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

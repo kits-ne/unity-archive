@@ -1,0 +1,10 @@
+{
+    "name": "com.siren.android-immediate-kit",
+    "displayName": "Android Immediate Kit",
+    "version": "0.0.1",
+    "unity": "2022.3",
+    "description": "Android JNI Modules access interfaces",
+    "keywords": [],
+    "license": "MIT",
+    "category": "Scripting"
+}

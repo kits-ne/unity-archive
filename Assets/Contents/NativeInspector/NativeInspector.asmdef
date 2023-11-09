@@ -1,12 +1,11 @@
 {
-    "name": "WidgetContainer.Editor",
+    "name": "NativeInspector",
     "rootNamespace": "",
     "references": [
-        "GUID:30809536d3d642a196014792dd0e1119"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:b83310cda914df543aefb3a44aa762c4"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

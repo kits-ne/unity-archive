@@ -22,6 +22,12 @@
       "dependencies": {},
       "hash": "284d5c50d3f1ddd9fa7df3d382ea904732a9c2ff"
     },
+    "com.siren.android-immediate-kit": {
+      "version": "file:AndroidImmediateKit",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.siren.inspectors": {
       "version": "file:Inspectors",
       "depth": 0,
