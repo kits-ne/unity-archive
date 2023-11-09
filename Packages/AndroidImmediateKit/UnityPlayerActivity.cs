@@ -3,10 +3,6 @@ using UnityEngine;
 
 namespace AndroidImmediateKit
 {
-    public static class AndroidImmediateManager
-    {
-    }
-
     public class UnityPlayerActivity : AndroidJavaObjectContext
     {
         static class Methods

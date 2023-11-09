@@ -2,7 +2,8 @@
     "name": "Samples.AndroidImmediateKit",
     "rootNamespace": "",
     "references": [
-        "GUID:5854ec06ce5289e44923d6a98cf9752e"
+        "AndroidImmediateKit",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

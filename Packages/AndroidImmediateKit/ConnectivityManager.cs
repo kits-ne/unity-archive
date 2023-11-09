@@ -33,12 +33,20 @@ namespace AndroidImmediateKit
         }
     }
 
+    /// <summary>
+    /// Deprecated API level 29
+    /// </summary>
     public class NetworkInfo : AndroidJavaObjectContext
     {
         static class Methods
         {
             public static readonly Method<bool> IsConnected = "isConnected";
+
+            /// <summary>
+            /// Deprecated API level 28
+            /// </summary>
             public static readonly Method<int> GetConnectType = "getType";
+
             public static readonly Method<string> GetConnectTypeName = "getTypeName";
         }
 
@@ -53,7 +61,14 @@ namespace AndroidImmediateKit
 
     public static class NetworkType
     {
+        /// <summary>
+        /// Deprecated API level 28
+        /// </summary>
         public const int Mobile = 0;
+
+        /// <summary>
+        /// Deprecated API level 28
+        /// </summary>
         public const int Wifi = 1;
     }
 }
