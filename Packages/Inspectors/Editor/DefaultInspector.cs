@@ -66,16 +66,19 @@ namespace Inspectors
             {
                 var methods = targetType
                     .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                    .Where(_ => _.GetCustomAttribute<ButtonAttribute>() != null)
+                    .Where(info => info.GetCustomAttribute<ButtonAttribute>() != null)
                     .ToArray();
 
                 foreach (var method in methods)
                 {
-                    // TODO: parameters
+                    if (container.Q<Button>(method.Name) != null) continue;
+                    
+                    // TODO: parameters 
                     // var parameters = method.GetParameters();
                     var button = new Button(() => { method.Invoke(serializedObject.targetObject, null); })
                     {
-                        text = method.Name
+                        text = method.Name,
+                        name = method.Name
                     };
                     container.Add(button);
                 }
