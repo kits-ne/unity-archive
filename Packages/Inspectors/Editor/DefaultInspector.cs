@@ -10,7 +10,7 @@ namespace Inspectors
 #if !UNITY_2022
     [CustomEditor(typeof(Object), true, isFallback = true)]
 #else
-    [CustomEditor(typeof(Object), true)]
+    [CustomEditor(typeof(Object), true), CanEditMultipleObjects]
 #endif
     public class DefaultInspector : UnityEditor.Editor
     {
