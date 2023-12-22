@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -36,10 +39,30 @@ namespace Inspectors
                         BindingFlags.NonPublic;
             var hookMethod = targetType.GetMethod(attr.MethodName, flags);
 
+            if (hookMethod == null) hookMethod = GetFlattenedMethods(targetType, attr.MethodName).FirstOrDefault();
+
             if (hookMethod == null) return field;
 
             field.RegisterValueChangeCallback(e => { hookMethod.Invoke(target, null); });
             return field;
+        }
+
+        public static IEnumerable<MethodInfo> GetFlattenedMethods(Type type, string methodName)
+        {
+            while (type != (Type) null)
+            {
+                MethodInfo[] methods = type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance |
+                                                       BindingFlags.Static | BindingFlags.Public |
+                                                       BindingFlags.NonPublic);
+                for (int i = 0; i < methods.Length; ++i)
+                {
+                    if (methods[i].Name == methodName)
+                        yield return methods[i];
+                }
+
+                type = type.BaseType;
+                methods = (MethodInfo[]) null;
+            }
         }
     }
 }
